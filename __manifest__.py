@@ -3,6 +3,10 @@
     "version": "18.0.1.0.0",
     "category": "Sales",
     "depends": ["product", "sale"],
+    "data": [
+        "views/pricelist_views.xml",
+        "views/product_views.xml",
+    ],
     "author": "MBA Consultings",
     "installable": True,
     "auto_install": False,
