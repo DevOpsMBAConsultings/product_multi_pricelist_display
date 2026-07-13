@@ -47,7 +47,7 @@ class ProductTemplate(models.Model):
     @api.model
     def _get_view(self, view_id=None, view_type='form', **options):
         arch, view = super()._get_view(view_id=view_id, view_type=view_type, **options)
-        if view_type == 'tree':
+        if view_type in ('tree', 'list'):
             doc = etree.fromstring(arch)
             target = doc.xpath("//field[@name='list_price']") or doc.xpath("//field[@name='lst_price']") or doc.xpath("//field[@name='name']")
             if target:
@@ -105,7 +105,7 @@ class ProductProduct(models.Model):
     @api.model
     def _get_view(self, view_id=None, view_type='form', **options):
         arch, view = super()._get_view(view_id=view_id, view_type=view_type, **options)
-        if view_type == 'tree':
+        if view_type in ('tree', 'list'):
             doc = etree.fromstring(arch)
             target = doc.xpath("//field[@name='list_price']") or doc.xpath("//field[@name='lst_price']") or doc.xpath("//field[@name='name']")
             if target:
