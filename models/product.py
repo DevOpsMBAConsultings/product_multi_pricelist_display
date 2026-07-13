@@ -15,6 +15,8 @@ class ProductTemplate(models.Model):
                 pricelists = self.env["product.pricelist"].search(
                     [("display_in_product_list", "=", True)]
                 )
+                if 'models' in res:
+                    res['models'] = dict(res['models'])
                 for pricelist in pricelists:
                     field_name = f"price_pricelist_{pricelist.id}"
                     if not arch_el.xpath(f"//field[@name='{field_name}']"):
@@ -89,6 +91,8 @@ class ProductProduct(models.Model):
                 pricelists = self.env["product.pricelist"].search(
                     [("display_in_product_list", "=", True)]
                 )
+                if 'models' in res:
+                    res['models'] = dict(res['models'])
                 for pricelist in pricelists:
                     field_name = f"price_pricelist_{pricelist.id}"
                     if not arch_el.xpath(f"//field[@name='{field_name}']"):
