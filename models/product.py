@@ -6,7 +6,7 @@ class ProductTemplate(models.Model):
     _inherit = "product.template"
 
     @api.model
-    def get_view(self, view_id=None, view_type='form', **options):
+    def _temp_get_view(self, view_id=None, view_type='form', **options):
         res = super().get_view(view_id=view_id, view_type=view_type, **options)
         if view_type == 'list':
             arch_el = etree.fromstring(res['arch'])
@@ -67,7 +67,7 @@ class ProductProduct(models.Model):
     _inherit = "product.product"
 
     @api.model
-    def get_view(self, view_id=None, view_type='form', **options):
+    def _temp_get_view(self, view_id=None, view_type='form', **options):
         res = super().get_view(view_id=view_id, view_type=view_type, **options)
         if view_type == 'list':
             arch_el = etree.fromstring(res['arch'])
