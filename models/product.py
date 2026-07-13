@@ -18,11 +18,13 @@ class ProductTemplate(models.Model):
                 )
                 if 'models' in res:
                     res['models'] = dict(res['models'])
+                current_target = target[0]
                 for pricelist in pricelists:
                     field_name = f"price_pricelist_{pricelist.id}"
                     if not arch_el.xpath(f"//field[@name='{field_name}']"):
                         new_field = etree.Element('field', name=field_name, optional="show")
-                        target[0].addnext(new_field)
+                        current_target.addnext(new_field)
+                        current_target = new_field
                         
                         # Add field name to the view models tuple
                         if 'models' in res and self._name in res['models']:
@@ -125,11 +127,13 @@ class ProductProduct(models.Model):
                 )
                 if 'models' in res:
                     res['models'] = dict(res['models'])
+                current_target = target[0]
                 for pricelist in pricelists:
                     field_name = f"price_pricelist_{pricelist.id}"
                     if not arch_el.xpath(f"//field[@name='{field_name}']"):
                         new_field = etree.Element('field', name=field_name, optional="show")
-                        target[0].addnext(new_field)
+                        current_target.addnext(new_field)
+                        current_target = new_field
                         
                         # Add field name to the view models tuple
                         if 'models' in res and self._name in res['models']:
