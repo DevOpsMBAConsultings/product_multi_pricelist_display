@@ -44,28 +44,6 @@ class ProductTemplate(models.Model):
                 else:
                     template[field_name] = 0.0
 
-    def _get_pricelist_fields(self):
-        """Get dynamic field definitions for pricelists"""
-        pricelists = self.env["product.pricelist"].search(
-            [("display_in_product_list", "=", True)]
-        )
-        fields_dict = {}
-        for pricelist in pricelists:
-            field_name = f"price_pricelist_{pricelist.id}"
-            fields_dict[field_name] = fields.Float(
-                string=f"Price ({pricelist.name})",
-                compute="_compute_pricelist_prices",
-                store=False,
-            )
-        return fields_dict
-
-    @api.model
-    def fields_get(self, allfields=None, **kwargs):
-        res = super().fields_get(allfields, **kwargs)
-        pricelist_fields = self._get_pricelist_fields()
-        res.update(pricelist_fields)
-        return res
-
     @api.model
     def _get_view(self, view_id=None, view_type='form', **options):
         arch, view = super()._get_view(view_id=view_id, view_type=view_type, **options)
@@ -124,28 +102,6 @@ class ProductProduct(models.Model):
                 except Exception:
                     product[field_name] = 0.0
 
-    def _get_pricelist_fields(self):
-        """Get dynamic field definitions for pricelists"""
-        pricelists = self.env["product.pricelist"].search(
-            [("display_in_product_list", "=", True)]
-        )
-        fields_dict = {}
-        for pricelist in pricelists:
-            field_name = f"price_pricelist_{pricelist.id}"
-            fields_dict[field_name] = fields.Float(
-                string=f"Price ({pricelist.name})",
-                compute="_compute_pricelist_prices",
-                store=False,
-            )
-        return fields_dict
-
-    @api.model
-    def fields_get(self, allfields=None, **kwargs):
-        res = super().fields_get(allfields, **kwargs)
-        pricelist_fields = self._get_pricelist_fields()
-        res.update(pricelist_fields)
-        return res
-
     @api.model
     def _get_view(self, view_id=None, view_type='form', **options):
         arch, view = super()._get_view(view_id=view_id, view_type=view_type, **options)
@@ -163,4 +119,5 @@ class ProductProduct(models.Model):
                         target[0].addnext(new_field)
                 arch = etree.tostring(doc, encoding='unicode')
         return arch, view
+
 
