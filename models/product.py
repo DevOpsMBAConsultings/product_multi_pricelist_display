@@ -22,8 +22,8 @@ class ProductTemplate(models.Model):
                         target[0].addnext(new_field)
                         
                         # Add field definition to the view metadata
-                        if 'fields' in res and field_name not in res['fields']:
-                            res['fields'][field_name] = {
+                        if 'models' in res and self._name in res['models'] and field_name not in res['models'][self._name]:
+                            res['models'][self._name][field_name] = {
                                 'type': 'float',
                                 'string': f"Price ({pricelist.name})",
                                 'readonly': True,
@@ -83,8 +83,8 @@ class ProductProduct(models.Model):
                         target[0].addnext(new_field)
                         
                         # Add field definition to the view metadata
-                        if 'fields' in res and field_name not in res['fields']:
-                            res['fields'][field_name] = {
+                        if 'models' in res and self._name in res['models'] and field_name not in res['models'][self._name]:
+                            res['models'][self._name][field_name] = {
                                 'type': 'float',
                                 'string': f"Price ({pricelist.name})",
                                 'readonly': True,
