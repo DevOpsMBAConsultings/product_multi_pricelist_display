@@ -77,6 +77,35 @@ class ProductTemplate(models.Model):
             return res
         return super().read(fields, load=load)
 
+    @api.model
+    def web_search_read(self, domain=None, specification=None, offset=0, limit=None, order=None, count_limit=None):
+        if specification:
+            pricelist_fields = {f: v for f, v in specification.items() if f.startswith('price_pricelist_')}
+            standard_specification = {f: v for f, v in specification.items() if not f.startswith('price_pricelist_')}
+            
+            res = super().web_search_read(domain=domain, specification=standard_specification, offset=offset, limit=limit, order=order, count_limit=count_limit)
+            
+            if pricelist_fields and 'records' in res:
+                pricelist_ids = [int(f.replace('price_pricelist_', '')) for f in pricelist_fields]
+                pricelists = self.env['product.pricelist'].browse(pricelist_ids)
+                pricelist_map = {p.id: p for p in pricelists}
+                
+                for record_dict in res['records']:
+                    record = self.browse(record_dict['id'])
+                    product = record.product_variant_id
+                    for f in pricelist_fields:
+                        p_id = int(f.replace('price_pricelist_', ''))
+                        pricelist = pricelist_map.get(p_id)
+                        if pricelist and product:
+                            try:
+                                record_dict[f] = pricelist._get_product_price(product, quantity=1.0)
+                            except Exception:
+                                record_dict[f] = 0.0
+                        else:
+                            record_dict[f] = 0.0
+            return res
+        return super().web_search_read(domain=domain, specification=specification, offset=offset, limit=limit, order=order, count_limit=count_limit)
+
 
 class ProductProduct(models.Model):
     _inherit = "product.product"
@@ -151,3 +180,31 @@ class ProductProduct(models.Model):
                             record_dict[f] = 0.0
             return res
         return super().read(fields, load=load)
+
+    @api.model
+    def web_search_read(self, domain=None, specification=None, offset=0, limit=None, order=None, count_limit=None):
+        if specification:
+            pricelist_fields = {f: v for f, v in specification.items() if f.startswith('price_pricelist_')}
+            standard_specification = {f: v for f, v in specification.items() if not f.startswith('price_pricelist_')}
+            
+            res = super().web_search_read(domain=domain, specification=standard_specification, offset=offset, limit=limit, order=order, count_limit=count_limit)
+            
+            if pricelist_fields and 'records' in res:
+                pricelist_ids = [int(f.replace('price_pricelist_', '')) for f in pricelist_fields]
+                pricelists = self.env['product.pricelist'].browse(pricelist_ids)
+                pricelist_map = {p.id: p for p in pricelists}
+                
+                for record_dict in res['records']:
+                    product = self.browse(record_dict['id'])
+                    for f in pricelist_fields:
+                        p_id = int(f.replace('price_pricelist_', ''))
+                        pricelist = pricelist_map.get(p_id)
+                        if pricelist and product:
+                            try:
+                                record_dict[f] = pricelist._get_product_price(product, quantity=1.0)
+                            except Exception:
+                                record_dict[f] = 0.0
+                        else:
+                            record_dict[f] = 0.0
+            return res
+        return super().web_search_read(domain=domain, specification=specification, offset=offset, limit=limit, order=order, count_limit=count_limit)
