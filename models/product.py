@@ -13,7 +13,8 @@ class ProductTemplate(models.Model):
             target = arch_el.xpath("//field[@name='list_price']") or arch_el.xpath("//field[@name='lst_price']") or arch_el.xpath("//field[@name='name']")
             if target:
                 pricelists = self.env["product.pricelist"].search(
-                    [("display_in_product_list", "=", True)]
+                    [("display_in_product_list", "=", True)],
+                    order="sequence, id"
                 )
                 if 'models' in res:
                     res['models'] = dict(res['models'])
@@ -35,7 +36,8 @@ class ProductTemplate(models.Model):
     def fields_get(self, allfields=None, **kwargs):
         res = super().fields_get(allfields, **kwargs)
         pricelists = self.env["product.pricelist"].search(
-            [("display_in_product_list", "=", True)]
+            [("display_in_product_list", "=", True)],
+            order="sequence, id"
         )
         for pricelist in pricelists:
             field_name = f"price_pricelist_{pricelist.id}"
@@ -118,7 +120,8 @@ class ProductProduct(models.Model):
             target = arch_el.xpath("//field[@name='list_price']") or arch_el.xpath("//field[@name='lst_price']") or arch_el.xpath("//field[@name='name']")
             if target:
                 pricelists = self.env["product.pricelist"].search(
-                    [("display_in_product_list", "=", True)]
+                    [("display_in_product_list", "=", True)],
+                    order="sequence, id"
                 )
                 if 'models' in res:
                     res['models'] = dict(res['models'])
@@ -140,7 +143,8 @@ class ProductProduct(models.Model):
     def fields_get(self, allfields=None, **kwargs):
         res = super().fields_get(allfields, **kwargs)
         pricelists = self.env["product.pricelist"].search(
-            [("display_in_product_list", "=", True)]
+            [("display_in_product_list", "=", True)],
+            order="sequence, id"
         )
         for pricelist in pricelists:
             field_name = f"price_pricelist_{pricelist.id}"
