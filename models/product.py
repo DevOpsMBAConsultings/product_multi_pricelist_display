@@ -48,18 +48,16 @@ class ProductTemplate(models.Model):
     def _get_view(self, view_id=None, view_type='form', **options):
         arch, view = super()._get_view(view_id=view_id, view_type=view_type, **options)
         if view_type in ('tree', 'list'):
-            doc = etree.fromstring(arch)
-            target = doc.xpath("//field[@name='list_price']") or doc.xpath("//field[@name='lst_price']") or doc.xpath("//field[@name='name']")
+            target = arch.xpath("//field[@name='list_price']") or arch.xpath("//field[@name='lst_price']") or arch.xpath("//field[@name='name']")
             if target:
                 pricelists = self.env["product.pricelist"].search(
                     [("display_in_product_list", "=", True)]
                 )
                 for pricelist in pricelists:
                     field_name = f"price_pricelist_{pricelist.id}"
-                    if not doc.xpath(f"//field[@name='{field_name}']"):
+                    if not arch.xpath(f"//field[@name='{field_name}']"):
                         new_field = etree.Element('field', name=field_name, optional="show")
                         target[0].addnext(new_field)
-                arch = etree.tostring(doc, encoding='unicode')
         return arch, view
 
 
@@ -106,18 +104,16 @@ class ProductProduct(models.Model):
     def _get_view(self, view_id=None, view_type='form', **options):
         arch, view = super()._get_view(view_id=view_id, view_type=view_type, **options)
         if view_type in ('tree', 'list'):
-            doc = etree.fromstring(arch)
-            target = doc.xpath("//field[@name='list_price']") or doc.xpath("//field[@name='lst_price']") or doc.xpath("//field[@name='name']")
+            target = arch.xpath("//field[@name='list_price']") or arch.xpath("//field[@name='lst_price']") or arch.xpath("//field[@name='name']")
             if target:
                 pricelists = self.env["product.pricelist"].search(
                     [("display_in_product_list", "=", True)]
                 )
                 for pricelist in pricelists:
                     field_name = f"price_pricelist_{pricelist.id}"
-                    if not doc.xpath(f"//field[@name='{field_name}']"):
+                    if not arch.xpath(f"//field[@name='{field_name}']"):
                         new_field = etree.Element('field', name=field_name, optional="show")
                         target[0].addnext(new_field)
-                arch = etree.tostring(doc, encoding='unicode')
         return arch, view
 
 
