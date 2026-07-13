@@ -6,7 +6,7 @@ class ProductTemplate(models.Model):
     _inherit = "product.template"
 
     @api.model
-    def _temp_get_view(self, view_id=None, view_type='form', **options):
+    def get_view(self, view_id=None, view_type='form', **options):
         res = super().get_view(view_id=view_id, view_type=view_type, **options)
         if view_type == 'list':
             arch_el = etree.fromstring(res['arch'])
@@ -21,17 +21,30 @@ class ProductTemplate(models.Model):
                         new_field = etree.Element('field', name=field_name, optional="show")
                         target[0].addnext(new_field)
                         
-                        # Add field definition to the view metadata
-                        if 'models' in res and self._name in res['models'] and field_name not in res['models'][self._name]:
-                            res['models'][self._name][field_name] = {
-                                'type': 'float',
-                                'string': f"Price ({pricelist.name})",
-                                'readonly': True,
-                                'sortable': False,
-                                'searchable': False,
-                                'store': False,
-                            }
+                        # Add field name to the view models tuple
+                        if 'models' in res and self._name in res['models']:
+                            fields_list = list(res['models'][self._name])
+                            if field_name not in fields_list:
+                                res['models'][self._name] = tuple(fields_list + [field_name])
                 res['arch'] = etree.tostring(arch_el, encoding='unicode')
+        return res
+
+    @api.model
+    def fields_get(self, allfields=None, **kwargs):
+        res = super().fields_get(allfields, **kwargs)
+        pricelists = self.env["product.pricelist"].search(
+            [("display_in_product_list", "=", True)]
+        )
+        for pricelist in pricelists:
+            field_name = f"price_pricelist_{pricelist.id}"
+            res[field_name] = {
+                'type': 'float',
+                'string': f"Price ({pricelist.name})",
+                'readonly': True,
+                'sortable': False,
+                'searchable': False,
+                'store': False,
+            }
         return res
 
     def read(self, fields=None, load='_classic_read'):
@@ -67,7 +80,7 @@ class ProductProduct(models.Model):
     _inherit = "product.product"
 
     @api.model
-    def _temp_get_view(self, view_id=None, view_type='form', **options):
+    def get_view(self, view_id=None, view_type='form', **options):
         res = super().get_view(view_id=view_id, view_type=view_type, **options)
         if view_type == 'list':
             arch_el = etree.fromstring(res['arch'])
@@ -82,17 +95,30 @@ class ProductProduct(models.Model):
                         new_field = etree.Element('field', name=field_name, optional="show")
                         target[0].addnext(new_field)
                         
-                        # Add field definition to the view metadata
-                        if 'models' in res and self._name in res['models'] and field_name not in res['models'][self._name]:
-                            res['models'][self._name][field_name] = {
-                                'type': 'float',
-                                'string': f"Price ({pricelist.name})",
-                                'readonly': True,
-                                'sortable': False,
-                                'searchable': False,
-                                'store': False,
-                            }
+                        # Add field name to the view models tuple
+                        if 'models' in res and self._name in res['models']:
+                            fields_list = list(res['models'][self._name])
+                            if field_name not in fields_list:
+                                res['models'][self._name] = tuple(fields_list + [field_name])
                 res['arch'] = etree.tostring(arch_el, encoding='unicode')
+        return res
+
+    @api.model
+    def fields_get(self, allfields=None, **kwargs):
+        res = super().fields_get(allfields, **kwargs)
+        pricelists = self.env["product.pricelist"].search(
+            [("display_in_product_list", "=", True)]
+        )
+        for pricelist in pricelists:
+            field_name = f"price_pricelist_{pricelist.id}"
+            res[field_name] = {
+                'type': 'float',
+                'string': f"Price ({pricelist.name})",
+                'readonly': True,
+                'sortable': False,
+                'searchable': False,
+                'store': False,
+            }
         return res
 
     def read(self, fields=None, load='_classic_read'):
